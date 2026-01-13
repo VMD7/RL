@@ -129,7 +129,7 @@ Consider a linear layer $y=xW^T$ with $W^T \in \mathbb{R}^{d_{\text{in}} \times 
 
    In **row-wise** parallelism, we split $W^T$ by rows (input dimension) into two blocks:
 
-   $$
+```math
    W^T = 
    \begin{bmatrix}
    W_1^T \\
@@ -149,7 +149,7 @@ Consider a linear layer $y=xW^T$ with $W^T \in \mathbb{R}^{d_{\text{in}} \times 
    \quad
    x_1 \in \mathbb{R}^{d_{\text{in}}^{(1)}},\;
    x_2 \in \mathbb{R}^{d_{\text{in}}^{(2)}}.
-   $$
+```
    Each GPU holds its own **input slice** and weight slice, and computes: $y_1 = x_1W_1^T,\quad y_2 =x_2W_2^T$, then we **sum** the partial outputs: $y = y_1 + y_2$
 
    
