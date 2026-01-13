@@ -17,10 +17,11 @@ We have encountered several accuracy issues related to TP in **DTensor**, includ
 Using [Qwen/Qwen3-4B-Instruct-2507](https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507) as an example, Figure 1 illustrates the `token_mult_prob_error` observed during training. We applied a *time-weighted exponential moving average (EMA)* smoothing method and used a logarithmic scale on the Y-axis for better visualization.
 
 The `token_mult_prob_error` [metric](https://github.com/NVIDIA-NeMo/RL/blob/main/docs/guides/grpo.md#multiplicative-token-probability-error) measures the discrepancy between the inference engine and the training engine when processing the same sample. It is defined as follows:
+
 $$
 \begin{aligned}
-g_i        & : \text{the } i^{th} \text{ item in } \text{generation\_logprobs}, \\
-p_i        & : \text{the } i^{th} \text{ item in } \text{policy\_logprobs}, \\
+g_i        & : \text{the } i^{th} \text{ item in } \text{generation_logprobs}, \\
+p_i        & : \text{the } i^{th} \text{ item in } \text{policy_logprobs}, \\
 m_i        & : \text{mask the } i^{th} \text{ token , whether 1 or 0}  \\
 &\text{global\_valid\_toks}  = \sum_i m_i \, . \\
 & \text{token\_mult\_prob\_error}= \frac{1}{\text{global\_valid\_toks}}\sum_{i} m_i \exp\!\left(\left|g_i - p_i\right|\right)
@@ -80,11 +81,15 @@ Our in-depth analysis across multiple models and runs indicates that this behavi
 ## 2. Batch-Variant Kernels
 
 In RL training, log probabilities are typically computed for samples drawn from the old policy, denoted as `prev_logprobs`. The same samples are then evaluated under the current policy being optimized, yielding `current_logprobs`. Using these two quantities, we compute the ratio between the current and previous policies as follows:
+
 $$
-ratio & = & exp(\text{current\_logprobs} - \text{prev\_logprobs}) \\
-& = & exp(log(\frac{\text{current\_probs}}{\text{prev\_probs}})) \\
-& = & \frac{\text{current\_probs}}{\text{prev\_probs}}
+\begin{aligned}
+\text{ratio} &= \exp\!\left(\text{current\_logprobs} - \text{prev\_logprobs}\right) \\
+&= \exp\!\left(\log\!\left(\frac{\text{current\_probs}}{\text{prev\_probs}}\right)\right) \\
+&= \frac{\text{current\_probs}}{\text{prev\_probs}}
+\end{aligned}
 $$
+
 This ratio is the standard [importance sampling](https://en.wikipedia.org/wiki/Importance_sampling) ratio used in off-policy RL to reweight returns when the data are collected under an older behavior policy.  In on-policy training, this ratio should be exactly 1.  However, in our experiments, we observed cases where the ratio deviates from 1, indicating a mismatch between the intended on-policy setting and the actual behavior of the system. Figure 4 and Figure 5 illustrate this phenomenon by showing the mismatch between `prev_logprobs` and `current_logprobs` under TP=4, as well as the reward curves under TP=4 and TP=1 for the `deepseek-ai/DeepSeek-R1-Distill-Qwen-7B` model.
 
 ![](./Fig/logprobs_unequal_1.png)
@@ -123,6 +128,7 @@ Consider a linear layer $y=xW^T$ with $W^T \in \mathbb{R}^{d_{\text{in}} \times 
 1. Row-wise parallel (TP = 2)
 
    In **row-wise** parallelism, we split $W^T$ by rows (input dimension) into two blocks:
+
    $$
    W^T = 
    \begin{bmatrix}
@@ -150,7 +156,7 @@ Consider a linear layer $y=xW^T$ with $W^T \in \mathbb{R}^{d_{\text{in}} \times 
 
 2. Column-wise parallel (TP = 2)
 
-   In **column-wise** parallelism, we split W*W* by columns (output dimension) into two blocks:
+   In **column-wise** parallelism, we split \(W^T\) by columns (output dimension) into two blocks:
 
    $$
    W^T =
@@ -160,7 +166,7 @@ Consider a linear layer $y=xW^T$ with $W^T \in \mathbb{R}^{d_{\text{in}} \times 
    \quad \text{where} \quad
    W_1^T \in \mathbb{R}^{d_{\text{in}} \times d_{\text{out}}^{(1)}},\;
    W_2^T \in \mathbb{R}^{d_{\text{in}} \times d_{\text{out}}^{(2)}},\;
-   d_{\text{in}}^{(1)} + d_{\text{out}}^{(2)} = d_{\text{out}}.
+   d_{\text{out}}^{(1)} + d_{\text{out}}^{(2)} = d_{\text{out}}.
    $$
    
    Each GPU gets the **full input** $x$ and computes: $y_1 = xW_1^T ,\quad y_2 = xW_2^T$, then we **concatenate** along the output dimension: $y =
