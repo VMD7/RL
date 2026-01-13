@@ -169,7 +169,7 @@ Consider a linear layer $y=xW^T$ with $W^T \in \mathbb{R}^{d_{\text{in}} \times 
    d_{\text{out}}^{(1)} + d_{\text{out}}^{(2)} = d_{\text{out}}.
 ```
    
-   Each GPU gets the **full input** $x$ and computes: $y_1 = xW_1^T ,\quad y_2 = xW_2^T$, then we **concatenate** along the output dimension: $y = \left y_1 & y_2 \right]$.
+   Each GPU gets the **full input** $x$ and computes: $y_1 = xW_1^T ,\quad y_2 = xW_2^T$, then we **concatenate** along the output dimension: $y = \left[ y_1 & y_2 \right]$.
 
 ### 3.1 Root Cause
 
