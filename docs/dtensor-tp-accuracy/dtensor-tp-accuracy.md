@@ -18,7 +18,7 @@ Using [Qwen/Qwen3-4B-Instruct-2507](https://huggingface.co/Qwen/Qwen3-4B-Instruc
 
 The `token_mult_prob_error` [metric](https://github.com/NVIDIA-NeMo/RL/blob/main/docs/guides/grpo.md#multiplicative-token-probability-error) measures the discrepancy between the inference engine and the training engine when processing the same sample. It is defined as follows:
 
-$$
+```math
 \begin{aligned}
 g_i        & : \text{the } i^{th} \text{ item in } \text{generation_logprobs}, \\
 p_i        & : \text{the } i^{th} \text{ item in } \text{policy_logprobs}, \\
@@ -26,7 +26,7 @@ m_i        & : \text{mask the } i^{th} \text{ token , whether 1 or 0}  \\
 &\text{global\_valid\_toks}  = \sum_i m_i \, . \\
 & \text{token\_mult\_prob\_error}= \frac{1}{\text{global\_valid\_toks}}\sum_{i} m_i \exp\!\left(\left|g_i - p_i\right|\right)
 \end{aligned}
-$$
+```
 
 In general, **generation logprobs** and **policy logprobs** should align closely, resulting in a `token_mult_prob_error` value near **1.0**. In our development, when this metric exceeds **1.05**, we consider it indicative of a potential framework issue that warrants further investigation.
 
