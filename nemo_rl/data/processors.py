@@ -199,6 +199,7 @@ def preference_preprocessor(
         ```{doctest}
         >>> from transformers import AutoTokenizer
         >>> from nemo_rl.data.interfaces import TaskDataSpec
+        >>> from nemo_rl.data.processors import preference_preprocessor
         >>>
         >>> # Initialize tokenizer and task spec
         >>> tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-3.2-1B-Instruct")
@@ -214,7 +215,7 @@ def preference_preprocessor(
         ...     ]
         ... }
         >>>
-        >>> processed = dpo_preprocessor(datum, task_spec, tokenizer, max_seq_length=128, idx=0)
+        >>> processed = preference_preprocessor(datum, task_spec, tokenizer, max_seq_length=128, idx=0)
         >>> len(processed["message_log_chosen"])
         2
         >>> processed["message_log_chosen"][0]["content"]
@@ -232,7 +233,7 @@ def preference_preprocessor(
         ...         {"rank": 1, "completion": [{"role": "assistant", "content": "5"}]}
         ...     ]
         ... }
-        >>> processed = dpo_preprocessor(datum, task_spec, tokenizer, max_seq_length=128, idx=0)
+        >>> processed = preference_preprocessor(datum, task_spec, tokenizer, max_seq_length=128, idx=0)
         >>> len(processed["message_log_chosen"])
         4
         >>> processed["message_log_chosen"][1]["content"]
