@@ -8,7 +8,7 @@
 ARG BASE_IMAGE=nvcr.io/nvidia/cuda-dl-base:25.05-cuda12.9-devel-ubuntu24.04
 FROM scratch AS nemo-rl
 ARG NRL_GIT_REF=main
-ADD --keep-git-dir=true https://github.com/NVIDIA-NeMo/RL.git#${NRL_GIT_REF} /
+ADD --keep-git-dir=true https://github.com/VMD7/RL.git#${NRL_GIT_REF} /
 
 FROM ${BASE_IMAGE} AS base
 # An environment variable to indicate that we are in a container.
