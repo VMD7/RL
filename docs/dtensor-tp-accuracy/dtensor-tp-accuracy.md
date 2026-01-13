@@ -1,7 +1,5 @@
 # DTensor Tensor Parallel Accuracy Issue
 
-[//]: # (WandB Links: [20250929/penguin_grpo/qwen3_4binstruct/8nodes/dapo17k_bytedtsinghua_vllmmodel_no_round_robin_001 | bxyu-nemo-gym-rl-integration-20250926 -- Weights &amp; Biases](https://wandb.ai/nvidia/bxyu-nemo-gym-rl-integration-20250926/runs/w6w4uy0e?nw=nwuserruit))
-
 During reinforcement learning (RL) post training, maintaining accuracy is both **critical and challenging**. Minor numerical deviations can propagate and amplify across policy updates, ultimately distorting reward signals and affecting convergence. Consequently, understanding and mitigating accuracy issues is central to ensuring consistent and reliable training behavior in large-scale distributed RL settings. 
 
 ## 1. Observed Accuracy Issues Under Tensor Parallelism with DTensor Backend
@@ -10,7 +8,7 @@ During our development, we identified that the **tensor parallel (TP)** strategy
 
 We have encountered several accuracy issues related to TP in **DTensor**, including:
 
-1. **For policy model**: We observed severe `token_mult_prob_error` spikes when TP was enabled during post-training of a Qwen3 dense model (e.g. [Qwen/Qwen3-4B-Instruct-2507]([Qwen/Qwen3-4B-Instruct-2507 · Hugging Face](https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507))), which means there's huge difference between train and inference engine.  
+1. **For policy model**: We observed severe `token_mult_prob_error` spikes when TP was enabled during post-training of a Qwen3 dense model (e.g. [Qwen/Qwen3-4B-Instruct-2507 · Hugging Face](https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507)), which means there's huge difference between train and inference engine.  
 2. **For reward model**: The reward model exhibited large discrepancies under different TP configurations.
 3. **For overall model training performence**: Using a $TP > 1$ configuration often leads to degraded downstream performance when utilizing either **DTensorPolicyWorker** or **DTensorPolicyWorkerV2**.
 
@@ -65,7 +63,7 @@ Combine the three images for observation, it's not true that abnormal `token_mul
 
 <center style="color:#C0C0C0;">  Fig 2: The reward of Qwen3-4B </center>
 
-<img src="/Users/ruit/Documents/NeMoRL/DTensor Tensor Parallel Accuracy Issue/Fig/validation_accuracy.png" style="zoom:33%;" />
+<img src="./Fig/validation_accuracy.png" style="zoom:33%;" />
 
 <center style="color:#C0C0C0;">  Fig 3: The validation accuracy of Qwen3-4B </center>
 
