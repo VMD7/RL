@@ -170,9 +170,10 @@ Consider a linear layer $y=xW^T$ with $W^T \in \mathbb{R}^{d_{\text{in}} \times 
 ```
    
    Each GPU gets the **full input** $x$ and computes: $y_1 = xW_1^T ,\quad y_2 = xW_2^T$, then we **concatenate** along the output dimension: 
-   ```math
-y = \begin{bmatrix}
-   y_1 & y_2 \end{bmatrix}
+```math
+y = \begin{bmatrix} \\
+   y_1 & y_2 \\
+\end{bmatrix} \\
 ```.
 
 ### 3.1 Root Cause
